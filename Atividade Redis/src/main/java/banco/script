@@ -1,0 +1,6 @@
+CREATE TABLE produto (
+    codigo INT,
+    descricao VARCHAR(300),
+    preco REAL,
+    CONSTRAINT codigo_pk PRIMARY KEY (codigo)
+);
