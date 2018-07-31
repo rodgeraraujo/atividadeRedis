@@ -39,7 +39,7 @@ public class ProdutoDao {
         stmt.execute();
 
         String json = gson.toJson(p);
-        jedis.setex("" + p.getCodigo(), 120, json);
+        jedis.setex("" + p.getCodigo(), 1800, json);
         jedis.close();
 
         return true;
