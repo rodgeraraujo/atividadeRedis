@@ -4,8 +4,8 @@
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
-        <option value="$PROJECT_DIR$/Jedis/target/maven-archiver/pom.properties" />
-        <option value="$PROJECT_DIR$/Jedis/pom.xml" />
+        <option value="$PROJECT_DIR$/Atividade Redis/target/maven-archiver/pom.properties" />
+        <option value="$PROJECT_DIR$/Atividade Redis/pom.xml" />
       </list>
     </option>
   </component>
