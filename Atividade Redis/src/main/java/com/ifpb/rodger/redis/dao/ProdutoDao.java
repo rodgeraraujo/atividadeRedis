@@ -38,19 +38,16 @@ public class ProdutoDao {
 
         stmt.execute();
 
-        String json = gson.toJson(p);
-        jedis.setex("" + p.getCodigo(), 1800, json);
-        jedis.close();
+        //Salva no redis
+        //String json = gson.toJson(p);
+        //jedis.setex("" + p.getCodigo(), 1800, json);
+        //jedis.close();
 
         return true;
     }
 
     public Produto buscar(int codigo) throws SQLException {
-        PreparedStatement statementmt = con.prepareStatement("SELECT * FROM produto WHERE codigo= ? ");
-        statementmt.setInt(1, codigo);
-        ResultSet validate = statementmt.executeQuery();
-
-        if (validate.next()){
+        if (validarProd(codigo)){
             if (jedis.get("" + codigo) == null) {
 
                 System.out.println("O produto não está salvo no Redis. \nBusca realizada no PostgreSQL.\n");
@@ -60,9 +57,6 @@ public class ProdutoDao {
                 ResultSet result = stmt.executeQuery();
 
                 if (result.next()){
-//                System.out.println("Código: " + result.getString("codigo") +
-//                        "\nDescrição: " + result.getString("descricao") +
-//                        "\nPreço: " + result.getString("preco"));
 
                     int codigoInt = Integer.parseInt(result.getString("codigo"));
                     String decricaoString = result.getString("descricao");
@@ -77,16 +71,26 @@ public class ProdutoDao {
                 String result = jedis.get("" + codigo);
                 Produto p = gson.fromJson(result, Produto.class);
 
-//            System.out.println("Código: " + p.getCodigo() +
-//                    "\nDescrição: " + p.getDescricao() +
-//                    "\nPreço: " + p.getPreco());
-
                 Produto produto = new Produto(p.getCodigo(), p.getDescricao(), p.getPreco());
+
+                //Salva no redis após buscar no postgresql
+                String json = gson.toJson(produto);
+                jedis.setex("" + produto.getCodigo(), 1800, json);
+                jedis.close();
+
                 return produto;
             }
         }
 
         System.out.printf("O codigo não corresponde a nenhum produto.");
         return null;
+    }
+
+    public boolean validarProd(int codigo) throws SQLException {
+        PreparedStatement statementmt = con.prepareStatement("SELECT * FROM produto WHERE codigo= ? ");
+        statementmt.setInt(1, codigo);
+        ResultSet validate = statementmt.executeQuery();
+
+        return validate.next();
     }
 }
